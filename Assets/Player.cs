@@ -10,11 +10,25 @@ namespace Ruihanyang.Game
         // 玩家得分
         public int score = 0;
 
+        // 玩家走过的路程
+        public float traveledDistance
+        {
+            get
+            {
+                return controller.GetTraveledDistance();
+            }
+        }
+
+        // 玩家走过的方块数
+        public int traveledTileCount = 0;
+
         #region 回调函数
 
         void Awake()
         {
             controller = GetComponent<PlayerController>();
+
+            CameraSmoothFollow.target = this.transform;
         }
 
         #endregion

@@ -6,22 +6,36 @@ namespace Ruihanyang.Game
     {
         private Animator animator;
 
+        #region 回调函数
+
         void Awake()
         {
             animator = GetComponent<Animator>();
         }
 
-        void OnCollisionExit(Collision other)
+        #endregion
+
+        #region 自定义公共函数
+
+        public void Disapear()
         {
-            if (other.gameObject.tag == "Player")
-            {
-                animator.SetBool("isDisapear", true);
-            }
+            PlayDisapearAnimation();
         }
 
         public void DestroySelf()
         {
             Destroy(gameObject);
         }
+
+        #endregion
+
+        #region 自定义私有函数
+
+        private void PlayDisapearAnimation()
+        {
+            animator.SetBool("isDisapear", true);
+        }
+
+        #endregion
     }
 }

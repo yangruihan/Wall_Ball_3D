@@ -45,6 +45,16 @@ namespace Ruihanyang.Game
             motor.AddSpeed(_value);
         }
 
+        public float GetSpeed()
+        {
+            return motor.GetSpeed();
+        }
+
+        public float GetTraveledDistance()
+        {
+            return motor.traveledDistance;
+        }
+
         #endregion
     }
 }

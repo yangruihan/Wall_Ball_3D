@@ -14,6 +14,8 @@ namespace Ruihanyang.Game
 
         #endregion
 
+        public float traveledDistance = 0f;
+
         [SerializeField]
         private float initSpeed = 2f;
 
@@ -33,9 +35,11 @@ namespace Ruihanyang.Game
             currentSpeed = initSpeed;
         }
 
-        void Update()
+        void FixedUpdate()
         {
-            rigid.MovePosition(transform.position + direction * currentSpeed * Time.deltaTime);
+            rigid.MovePosition(transform.position + direction * currentSpeed * Time.fixedDeltaTime);
+
+            traveledDistance += currentSpeed * Time.fixedDeltaTime;
         }
 
         #endregion
@@ -67,6 +71,11 @@ namespace Ruihanyang.Game
         public Vector3 GetDirection()
         {
             return direction;
+        }
+
+        public float GetSpeed()
+        {
+            return currentSpeed;
         }
 
         #endregion
