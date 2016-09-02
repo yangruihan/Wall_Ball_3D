@@ -22,6 +22,9 @@ namespace Ruihanyang.Game
         // 玩家走过的方块数
         public int traveledTileCount = 0;
 
+        // 玩家速度增长
+        public float playerSpeedIncValue = 0.01f;
+
         #region 回调函数
 
         void Awake()

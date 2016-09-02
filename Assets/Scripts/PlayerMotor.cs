@@ -10,6 +10,7 @@ namespace Ruihanyang.Game
 
         #region 身上组件
 
+        private Player player;
         private Rigidbody rigid;
 
         #endregion
@@ -27,6 +28,7 @@ namespace Ruihanyang.Game
 
         void Awake()
         {
+            player = GetComponent<Player>();
             rigid = GetComponent<Rigidbody>();
         }
 
@@ -37,6 +39,8 @@ namespace Ruihanyang.Game
 
         void FixedUpdate()
         {
+            currentSpeed += Time.fixedDeltaTime * player.playerSpeedIncValue;
+
             rigid.MovePosition(transform.position + direction * currentSpeed * Time.fixedDeltaTime);
 
             traveledDistance += currentSpeed * Time.fixedDeltaTime;

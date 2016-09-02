@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -16,6 +17,15 @@ namespace Ruihanyang.Game
 
         [SerializeField]
         private GameObject playerPrefab;
+
+        #endregion
+
+        #region UI组件
+
+        [SerializeField]
+        private Text distanceText;
+        [SerializeField]
+        private Text scoreText;
 
         #endregion
 
@@ -61,12 +71,20 @@ namespace Ruihanyang.Game
         {
             if (player != null)
             {
-                // 销毁走过的 Tile
-                if (player.traveledDistance > (player.traveledTileCount + 1) * 1.0f)
+                // 计算走过的 Tile
+                if (player.traveledDistance > (player.traveledTileCount + 1.0f) * 1.0f)
                 {
                     // 当前玩家走过的 Tile 数量 +1
                     player.traveledTileCount++;
 
+                    // 得分
+                    player.AddScore(1);
+                }
+
+                // 走到第二块 Tile，第一块 Tile 消失
+                if (player.transform.position.x > tiles[1].transform.position.x + 0.2f
+                    || player.transform.position.z > tiles[1].transform.position.z + 0.2f)
+                {
                     // 第一个方块消失
                     tiles[0].Disapear();
                     tiles.RemoveAt(0);
@@ -78,6 +96,13 @@ namespace Ruihanyang.Game
             {
                 BuildTile();
             }
+
+            UpdateUI();
+        }
+
+        void FixedUpdate()
+        {
+            gameTime += Time.fixedDeltaTime;
         }
 
         #endregion
@@ -145,6 +170,21 @@ namespace Ruihanyang.Game
             player = _temp.GetComponent<Player>();
 
             player.Init(tiles[1].transform.position);
+        }
+
+        void UpdateUI()
+        {
+            if (player == null) return;
+
+            if (distanceText != null)
+            {
+                distanceText.text = string.Format("{0:F2}m", player.traveledDistance);
+            }
+
+            if (scoreText != null)
+            {
+                scoreText.text = player.score + "";
+            }
         }
 
         #endregion
