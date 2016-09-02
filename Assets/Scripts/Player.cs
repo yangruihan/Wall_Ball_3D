@@ -11,11 +11,11 @@ namespace Ruihanyang.Game
         public int score = 0;
 
         // 玩家走过的路程
-        public float traveledDistance
+        public float traveledTime
         {
             get
             {
-                return controller.GetTraveledDistance();
+                return controller.GetTraveledTime();
             }
         }
 
@@ -23,7 +23,7 @@ namespace Ruihanyang.Game
         public int traveledTileCount = 0;
 
         // 玩家速度增长
-        public float playerSpeedIncValue = 0.01f;
+        public float playerSpeedIncValue = 0.005f;
 
         #region 回调函数
 
@@ -41,6 +41,8 @@ namespace Ruihanyang.Game
         public void Init(Vector3 _dir)
         {
             controller.Init(_dir);
+
+            Init();
         }
 
         public void AddScore(int _score)
@@ -50,5 +52,14 @@ namespace Ruihanyang.Game
 
         #endregion
 
+        #region 自定义私有函数
+
+        void Init()
+        {
+            score = 0;
+            traveledTileCount = 0;
+        }
+
+        #endregion
     }
 }

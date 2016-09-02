@@ -8,6 +8,13 @@ namespace Ruihanyang.Game
 
     public class GameManager : MonoBehaviour
     {
+        public enum GameState
+        {
+            Ready,
+            Run,
+            GameOver
+        }
+
         static public GameManager Instance = null;
 
         #region 预置体
@@ -23,11 +30,13 @@ namespace Ruihanyang.Game
         #region UI组件
 
         [SerializeField]
-        private Text distanceText;
+        private Text timeText;
         [SerializeField]
         private Text scoreText;
 
         #endregion
+
+        public GameState gameState = GameState.Ready;
 
         // Player 初始出生地
         [SerializeField]
@@ -71,22 +80,19 @@ namespace Ruihanyang.Game
         {
             if (player != null)
             {
-                // 计算走过的 Tile
-                if (player.traveledDistance > (player.traveledTileCount + 1.0f) * 1.0f)
+                // 当前 Tile 1s 后消失
+                if (player.transform.position.x > tiles[0].transform.position.x + 0.5f
+                    || player.transform.position.z > tiles[0].transform.position.z + 0.5f)
                 {
                     // 当前玩家走过的 Tile 数量 +1
                     player.traveledTileCount++;
 
                     // 得分
                     player.AddScore(1);
-                }
 
-                // 走到第二块 Tile，第一块 Tile 消失
-                if (player.transform.position.x > tiles[1].transform.position.x + 0.2f
-                    || player.transform.position.z > tiles[1].transform.position.z + 0.2f)
-                {
                     // 第一个方块消失
-                    tiles[0].Disapear();
+                    StartCoroutine(WaitSecondsForTileDisapear(tiles[0]));
+
                     tiles.RemoveAt(0);
                 }
             }
@@ -98,6 +104,18 @@ namespace Ruihanyang.Game
             }
 
             UpdateUI();
+
+            if (IsGameOver())
+            {
+                Destroy(player.gameObject);
+
+                gameState = GameState.GameOver;
+            }
+
+            if (gameState == GameState.GameOver && Input.GetKeyDown(KeyCode.Space))
+            {
+                Init();
+            }
         }
 
         void FixedUpdate()
@@ -113,11 +131,28 @@ namespace Ruihanyang.Game
         {
             tileActualPosition = tileStartPosition;
 
+            // 清理已存在 Tile
+            ClearTiles();
+
             // 生成初始 Tile
             BuildInitTile();
 
             // 初始化玩家
             StartCoroutine(InitPlayer());
+
+            gameState = GameState.Run;
+        }
+
+        void ClearTiles()
+        {
+            tiles.Clear();
+
+            GameObject[] _tileObjs = GameObject.FindGameObjectsWithTag("Tile");
+
+            foreach (var _tile in _tileObjs)
+            {
+                Destroy(_tile);
+            }
         }
 
         void BuildTile()
@@ -143,6 +178,23 @@ namespace Ruihanyang.Game
             {
                 tileActualPosition += new Vector3(0f, 0f, 1f);
             }
+
+            if (player != null && player.traveledTime > 20f)
+            {
+                _rnd = Random.Range(0, 100);
+
+                if (_rnd < 40)
+                {
+                    //if (_rnd < 20)
+                    //{
+                        tileActualPosition += new Vector3(0f, 1f, 0f);
+                    //}
+                    //else
+                    //{
+                    //    tileActualPosition += new Vector3(0f, -1f, 0f);
+                    //}
+                }
+            }
         }
 
         void BuildInitTile()
@@ -163,27 +215,57 @@ namespace Ruihanyang.Game
         {
             yield return new WaitForSeconds(0.8f);
 
-            GameObject _temp = Instantiate(playerPrefab, playerSpawnPosition.position, Quaternion.identity) as GameObject;
+            if (player == null)
+            {
+                GameObject _temp = Instantiate(playerPrefab, playerSpawnPosition.position, Quaternion.identity) as GameObject;
 
-            _temp.name = "Player";
+                _temp.name = "Player";
 
-            player = _temp.GetComponent<Player>();
+                player = _temp.GetComponent<Player>();
 
-            player.Init(tiles[1].transform.position);
+                player.Init(tiles[1].transform.position);
+            }
+            else
+            {
+                player.transform.position = playerSpawnPosition.position;
+
+                player.Init(tiles[1].transform.position);
+            }
         }
 
         void UpdateUI()
         {
             if (player == null) return;
 
-            if (distanceText != null)
+            if (timeText != null)
             {
-                distanceText.text = string.Format("{0:F2}m", player.traveledDistance);
+                timeText.text = string.Format("{0:F2}s", player.traveledTime);
             }
 
             if (scoreText != null)
             {
                 scoreText.text = player.score + "";
+            }
+        }
+
+        IEnumerator WaitSecondsForTileDisapear(Tile _tile)
+        {
+            yield return new WaitForSeconds(0.3f);
+
+            _tile.Disapear();
+        }
+
+        bool IsGameOver()
+        {
+            if (player == null) return false;
+
+            if (player.transform.position.y <= tiles[0].transform.position.y - 20)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 

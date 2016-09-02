@@ -21,6 +21,13 @@ namespace Ruihanyang.Game
         Vector3 velocity = Vector3.zero;
         float targetHeight = 100000.0f;
 
+        private Vector3 rawPosition = Vector3.zero;
+
+        void Start()
+        {
+            rawPosition = transform.position;
+        }
+
         void Apply(Transform dummyTarget, Vector3 dummyCenter)
         {
             Vector3 targetCenter = target.position + centerOffset;
@@ -44,6 +51,14 @@ namespace Ruihanyang.Game
             }
 
             SetUpRotation(targetCenter, targetHead);
+        }
+
+        void Update()
+        {
+            if (target == null)
+            {
+                transform.position = rawPosition;
+            }
         }
 
         void LateUpdate()

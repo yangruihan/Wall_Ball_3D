@@ -15,7 +15,7 @@ namespace Ruihanyang.Game
 
         #endregion
 
-        public float traveledDistance = 0f;
+        public float traveledTime = 0f;
 
         [SerializeField]
         private float initSpeed = 2f;
@@ -32,27 +32,26 @@ namespace Ruihanyang.Game
             rigid = GetComponent<Rigidbody>();
         }
 
-        void Start()
-        {
-            currentSpeed = initSpeed;
-        }
-
         void FixedUpdate()
         {
             currentSpeed += Time.fixedDeltaTime * player.playerSpeedIncValue;
 
             rigid.MovePosition(transform.position + direction * currentSpeed * Time.fixedDeltaTime);
 
-            traveledDistance += currentSpeed * Time.fixedDeltaTime;
+            traveledTime += Time.fixedDeltaTime;
         }
 
         #endregion
 
         #region 自定义公共函数
 
-        public void InitDirection(Vector3 _dir)
+        public void Init(Vector3 _dir)
         {
             direction = _dir;
+
+            currentSpeed = initSpeed;
+
+            traveledTime = 0f;
         }
 
         public void ChangeDirection(Vector3 _dir)
@@ -65,6 +64,11 @@ namespace Ruihanyang.Game
             {
                 direction = DIRECTION_LEFT;
             }
+        }
+
+        public void Jump()
+        {
+            rigid.AddForce(new Vector3(0f, 1400f, 0f));
         }
 
         public void AddSpeed(float _value)

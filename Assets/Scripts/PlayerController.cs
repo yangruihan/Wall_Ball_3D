@@ -8,13 +8,18 @@ namespace Ruihanyang.Game
     public class PlayerController : MonoBehaviour
     {
         [SerializeField]
-        private KeyCode changeDirectionKey = KeyCode.Space;
+        private KeyCode changeDirectionKey = KeyCode.J;
+
+        [SerializeField]
+        private KeyCode JumpKey = KeyCode.K;
 
         #region 身上组件
 
         private PlayerMotor motor;
 
         #endregion
+
+        private bool isJump = false;
 
         #region 回调函数
 
@@ -29,6 +34,17 @@ namespace Ruihanyang.Game
             {
                 motor.ChangeDirection(motor.GetDirection());
             }
+
+            if (Input.GetKeyDown(JumpKey) && !isJump)
+            {
+                isJump = true;
+                motor.Jump();
+            }
+        }
+
+        void OnCollisionEnter(Collision other)
+        {
+            isJump = false;
         }
 
         #endregion
@@ -37,7 +53,9 @@ namespace Ruihanyang.Game
 
         public void Init(Vector3 _dir)
         {
-            motor.InitDirection(_dir);
+            motor.Init(_dir);
+
+            isJump = false;
         }
 
         public void AddSpeed(float _value)
@@ -50,9 +68,9 @@ namespace Ruihanyang.Game
             return motor.GetSpeed();
         }
 
-        public float GetTraveledDistance()
+        public float GetTraveledTime()
         {
-            return motor.traveledDistance;
+            return motor.traveledTime;
         }
 
         #endregion
